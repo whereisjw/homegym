@@ -1,6 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
+import Header from "./Header";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,10 +14,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="bg-white w-full text-lg font-medium py-3 fixed text-gray-700 border-b top-0 flex items-center">
-          타이틀
-        </div>
-        <div className="w-full max-w-lg mx-auto pt-16 pb-16">{children}</div>
+        <Header />
+        {children}
         <div className="bg-white   text-gray-700 border-t  fixed bottom-0 w-full px-10 pb-5 pt-3 flex justify-between text-xs">
           <Link href={`/main`}>
             <div className="flex flex-col items-center space-y-2">
