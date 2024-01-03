@@ -1,17 +1,31 @@
 "use client";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 
 function cls(...classnames) {
   return classnames.join(" ");
 }
 
 export default function Enter() {
+  const { register, handleSubmit, watch, reset } = useForm();
   const [method, setMethod] = useState("email");
-  const onEmailClick = () => setMethod("email");
-  const onPhoneClick = () => setMethod("phone");
+  const onEmailClick = () => {
+    reset();
+    setMethod("email");
+  };
+  const onPhoneClick = () => {
+    reset();
+    setMethod("phone");
+  };
+  const onValid = (data) => {
+    console.log(data);
+  };
+  console.log(watch());
   return (
     <div className="mt-16 px-4">
-      <h3 className="text-3xl font-bold text-center">중고홈짐으로 접속</h3>
+      <h3 className="text-3xl font-bold text-center ">
+        중고홈짐에 오신걸 환영합니다
+      </h3>
       <div className="mt-8">
         <div className="flex flex-col items-center">
           <h5 className="text-sm text-gray-500 font-medium">Enter using:</h5>
@@ -38,7 +52,7 @@ export default function Enter() {
             </button>
           </div>
         </div>
-        <form className="flex flex-col mt-8">
+        <form onSubmit={handleSubmit(onValid)} className="flex flex-col mt-8">
           <label className="text-sm font-medium text-gray-500">
             {method === "email" ? "Email address" : null}
             {method === "phone" ? "Phone number" : null}
@@ -46,6 +60,7 @@ export default function Enter() {
           <div className="mt-1">
             {method === "email" ? (
               <input
+                {...register("email", { required: true })}
                 type="email"
                 className="appearance-none w-full py-2 border-gray-300 rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-teal-500 focus:border-teal-500 "
                 required
@@ -57,6 +72,7 @@ export default function Enter() {
                   +82
                 </span>
                 <input
+                  {...register("phone", { required: true })}
                   className="appearance-none w-full py-2 border-gray-300 rounded-md rounded-l-none shadow-sm placeholder-gray-500 focus:outline-none focus:ring-teal-500 focus:border-teal-500"
                   type="number"
                   required

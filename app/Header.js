@@ -1,9 +1,12 @@
+"use client";
+import Link, { useRouter } from "next/navigation";
 import React from "react";
 
 const Header = () => {
+  const router = useRouter();
   return (
     <>
-      <div className="mt-[15vh]">
+      <div className="mt-[15vh] ">
         <div className=" z-10 bg-white w-full h-[15vh] border-b border-gray-300 fixed top-0">
           <div className="h-[4vh]   flex items-center justify-center bg-teal-500 text-white">
             <div className="text-center text-[12px] flex justify-center items-center font-medium">
@@ -20,7 +23,11 @@ const Header = () => {
                 영상
               </span>
             </div>
-            <div className="w-[33%] flex justify-center text-4xl font-bold cursor-pointer text-teal-500">
+            <div
+              onClick={() => {
+                router.push("/");
+              }}
+              className="w-[33%] flex justify-center text-4xl font-bold cursor-pointer text-teal-500">
               중고홈짐
             </div>
             <div className="hidden w-[33%] text-[12px] lg:flex justify-end items-center space-x-[15px]">
@@ -44,7 +51,14 @@ const Header = () => {
                 관심상품
               </span>
               <span className="cursor-pointer">회원가입</span>
-              <span className="cursor-pointer">로그인</span>
+
+              <span
+                onClick={() => {
+                  router.push("/login");
+                }}
+                className="cursor-pointer">
+                로그인
+              </span>
             </div>
             <div className="lg:hidden lg:w-0  w-[33%] flex justify-end items-center">
               <span>
