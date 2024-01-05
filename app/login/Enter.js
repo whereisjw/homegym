@@ -1,12 +1,15 @@
 "use client";
+import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import useMutation from "../libs/client/useMutation";
 
 function cls(...classnames) {
   return classnames.join(" ");
 }
 
 export default function Enter() {
+  const [enter, { loading, data, error }] = useMutation("/api/login");
   const { register, handleSubmit, watch, reset } = useForm();
   const [method, setMethod] = useState("email");
   const onEmailClick = () => {
@@ -17,10 +20,10 @@ export default function Enter() {
     reset();
     setMethod("phone");
   };
-  const onValid = (data) => {
-    console.log(data);
+  const onValid = (inputData) => {
+    enter(inputData);
   };
-  console.log(watch());
+  console.log(loading, data, error);
   return (
     <div className="mt-16 px-4">
       <h3 className="text-3xl font-bold text-center ">

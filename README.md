@@ -72,8 +72,7 @@ scoop.sh
 
 -- 에러시 아래 명령러 실행
 
-> > irm get.scoop.sh -outfile 'install.ps1'
-> > iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
+
 
 # scoop bucket add pscale https://github.com/planetscale/scoop-bucket.git
 
