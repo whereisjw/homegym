@@ -1,5 +1,11 @@
 # 중고홈짐사이트
 
+- 중고헬스 용품을 사고 파는 사이트
+- 주요기능:게시글작성,실시간채팅,라이브커머스,서버리스,회원가입(이메일,전화번호인증),로그인(nextauth)
+- 개발자 박지one
+
+# tailwind 플러그인설치
+
 플러그인설치
 npm install @tailwindcss/forms
 
@@ -11,7 +17,7 @@ tailwind config에 적기
 
 # prisma
 
-# Prisma
+## Prisma
 
 1. Node.js and Typescript ORM(Object Relational Mapping)
    => JS or TS 와 데이터베이스 사이에 다리를 놓아줌 (기본적으로 번역기의 역할을 한다고 생각하면 됨)
@@ -47,7 +53,7 @@ datasource db {
 (Severless 서버가 없다는 게 아니라 서버를 우리가 유지할 필요가 없음)
 planetscale.com
 
-# Vitess
+## Vitess
 
 Vitess는 MySQL을 스케일링하기 위한 데이터베이스 클러스터링 시스템
 인터넷에서 가장 큰 사이트를 호스팅하는 강력한 오픈 소스 기술입니다.
@@ -66,37 +72,35 @@ Vitess를 사용하는 이유
 
 scoop.sh
 
-# Set-ExecutionPolicy RemoteSigned -Scope CurrentUser # Optional: Needed to run a remote script the first time
+## Set-ExecutionPolicy RemoteSigned -Scope CurrentUser # Optional: Needed to run a remote script the first time
 
-# irm get.scoop.sh | iex
+## irm get.scoop.sh | iex
 
 -- 에러시 아래 명령러 실행
 
+## scoop bucket add pscale https://github.com/planetscale/scoop-bucket.git
 
+## scoop install pscale mysql
 
-# scoop bucket add pscale https://github.com/planetscale/scoop-bucket.git
+## pscale 명령어로 설치 잘된지확인가능
 
-# scoop install pscale mysql
-
-# pscale 명령어로 설치 잘된지확인가능
-
-# pscale auth login
+## pscale auth login
 
 - 사이트 뜨면 터미널에있는거랑같은지확인후 컨펌
 
-# pscale region list
+## pscale region list
 
 - 나라확인
 
-# pscale database create 프로젝트이름 --region gcp-asia-northeast3
+## pscale database create 프로젝트이름 --region gcp-asia-northeast3
 
 신용카드에러뜨면 사이트에서 신용카드 등록후 다시만들면됨 (어려우면 그냥 사이트에서 만들어도 상관없음)
 
-# pscale connect market(프로젝트이름)
+## pscale connect market(프로젝트이름)
 
 실행
 
-# DATABASE_URL="mysql://127.0.0.1:61881/market"
+## DATABASE_URL="mysql://127.0.0.1:61881/market"
 
 - 이런식으로 env파일 수정
 
@@ -110,18 +114,150 @@ datasource db {
 
 외래키 사용을 위해 relationMode = "prisma" 추가
 
-# npx prisma db push
+## npx prisma db push
 
 터미널에 추가완료 !
 
-# npx prisma studio
+## npx prisma studio
 
 명령어를 통해 테이블확인가능
 
-# npm i @prisma/client
+## npm i @prisma/client
 
 설치하고 client 파일만들어서 import
 
-# npx prisma generate
+## npx prisma generate
 
 확인해보기
+
+# 회원가입기능
+
+```
+import client from "@/app/libs/server/client";
+import withHandler from "@/app/libs/server/withHandler";
+
+async function handler(req, res) {
+  const { phone, email } = req.body;
+
+  const user = await client.user.upsert({
+    where: {
+      ...(phone ? { phone: Number(phone) } : { email: email }),
+    },
+    create: {
+      name: "Anonymous",
+      ...(phone ? { phone: Number(phone) } : { email: email }),
+    },
+    update: {},
+  });
+
+  /*   if (email) {
+    user = await client.user.findUnique({
+      where: {
+        email: email,
+      },
+    });
+    if (user) console.log("found it");
+    if (!user) {
+      console.log("did not find. will create");
+      user = await client.user.create({
+        data: {
+          name: "Anonymous",
+          email: email,
+        },
+      });
+    }
+  }
+  if (phone) {
+    user = await client.user.findUnique({
+      where: {
+        phone: Number(phone),
+      },
+    });
+    if (user) console.log("found it");
+    if (!user) {
+      console.log("did not find. will create");
+      user = await client.user.create({
+        data: {
+          name: "Anonymous",
+          phone: Number(phone),
+        },
+      });
+    }
+  } */
+  console.log(user);
+  return res.status(200).end();
+}
+
+export default withHandler("POST", handler);
+```
+
+## 외래키만들기
+
+```
+model User {
+  id        Int      @id @default(autoincrement())
+  phone     Int?     @unique
+  email     String?  @unique
+  name      String
+  avatar    String?
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+  Tokens    Token[]
+}
+
+model Token {
+  id        Int      @id @default(autoincrement())
+  payload   String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+
+  @@index([userId])
+}
+```
+
+```
+npx prisma db push
+```
+
+```
+import client from "@/app/libs/server/client";
+import withHandler from "@/app/libs/server/withHandler";
+
+async function handler(req, res) {
+  const { phone, email } = req.body;
+
+  /*   const user = await client.user.upsert({
+    where: {
+      ...(phone ? { phone: Number(phone) } : { email: email }),
+    },
+    create: {
+      name: "Anonymous",
+      ...(phone ? { phone: Number(phone) } : { email: email }),
+    },
+    update: {},
+  }); */
+
+  const token = await client.token.create({
+    data: {
+      payload: "12349",
+      user: {
+        connectOrCreate: {
+          where: {
+            ...(phone ? { phone: Number(phone) } : { email: email }),
+          },
+          create: {
+            name: "Anonymous",
+            ...(phone ? { phone: Number(phone) } : { email: email }),
+          },
+        },
+      },
+    },
+  });
+  console.log(token);
+  return res.status(200).end();
+}
+
+export default withHandler("POST", handler);
+```
